@@ -104,6 +104,17 @@ push_config = {
 notify_function = []
 # fmt: on
 
+def get_lark_key():
+    try:
+        with open('config.json', 'r', encoding='utf-8') as f:
+            config_data = json.load(f)  # 读取文件内容并将其转换为Python字典
+            return config_data.get("lark_key", "")
+    except FileNotFoundError:
+        print("config.json 文件未找到")
+        return None
+push_config["FSKEY"] = get_lark_key()  # FS = FeiShu = Lark
+
+
 # 首先读取 面板变量 或者 github action 运行变量
 for k in push_config:
     if os.getenv(k):
@@ -196,11 +207,12 @@ def feishu_bot(title: str, content: str) -> None:
         return
     print("飞书 服务启动")
 
-    url = f'https://open.feishu.cn/open-apis/bot/v2/hook/{push_config.get("FSKEY")}'
+    # url = f'https://open.feishu.cn/open-apis/bot/v2/hook/{push_config.get("FSKEY")}'
+    url = f'https://www.feishu.cn/flow/api/trigger-webhook/{push_config.get("FSKEY")}'
     data = {"msg_type": "text", "content": {"text": f"{title}\n\n{content}"}}
     response = requests.post(url, data=json.dumps(data)).json()
 
-    if response.get("StatusCode") == 0:
+    if response.get("StatusCode") == 0 or response.get("msg") == "success":
         print("飞书 推送成功！")
     else:
         print("飞书 推送失败！错误信息如下：\n", response)

@@ -7,6 +7,16 @@ from notify import send
 import re
 import os
 
+def get_weibo_cookie():
+    try:
+        with open('config.json', 'r', encoding='utf-8') as f:
+            config_data = json.load(f)      # 读取文件内容并将其转换为Python字典
+            return config_data.get("weibo_cookie", "")
+    except FileNotFoundError:
+        print("config.json 文件未找到。")
+        return None
+weibo_my_cookie = get_weibo_cookie()
+
 API_URL = "https://api.weibo.cn/2/cardlist"
 SIGN_URL = "https://api.weibo.cn/2/page/button"
 
@@ -33,10 +43,10 @@ def get_card_type_11(params, headers, since_id):
     cards = data.get("cards", [])
     card_type_11_info = []
     for card in cards:
-        if card.get("card_type") == 11:
+        if card.get("card_type") == '11':
             card_group = card.get("card_group", [])
             for item in card_group:
-                if item.get("card_type") == 8:
+                if item.get("card_type") == '8':
                     info = {
                         "scheme": item.get("scheme"),
                         "title_sub": item.get("title_sub")
@@ -99,7 +109,7 @@ headers = {
 }
 
 if __name__ == "__main__":
-    weibo_my_cookie = os.getenv("weibo_my_cookie")
+    # weibo_my_cookie = os.getenv("weibo_my_cookie")
     since_id = 1
     while True:
         params = extract_params(weibo_my_cookie)
@@ -124,4 +134,5 @@ if __name__ == "__main__":
         print(result_message)
         
         since_id += 1 
-    # send("微博签到结果:", f"超话列表：\n{super_topic_list}\n{result_message}")
+        break # only 1 page
+    send("微博签到结果:", f"超话列表：\n{super_topic_list}\n{result_message}")
