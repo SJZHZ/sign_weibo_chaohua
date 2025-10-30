@@ -1,1 +1,1 @@
-python weibo_chaohua_sign.py
+python3 weibo_chaohua_sign.py
