@@ -1,1 +1,4 @@
 config.json
+log/
+Weibo_venv/
+__pycache__/

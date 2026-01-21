@@ -7,6 +7,11 @@ from notify import send
 import re
 import os
 
+proxies = {
+    'http':  'socks5h://localhost:1080',
+    'https': 'socks5h://localhost:1080'
+}
+
 def get_weibo_cookie():
     try:
         with open('config.json', 'r', encoding='utf-8') as f:
@@ -21,7 +26,7 @@ API_URL = "https://api.weibo.cn/2/cardlist"
 SIGN_URL = "https://api.weibo.cn/2/page/button"
 
 def send_request(url, params, headers):
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(url, params=params, headers=headers, proxies=proxies)
     if response.status_code == 200:
         try:
             return response.json()
